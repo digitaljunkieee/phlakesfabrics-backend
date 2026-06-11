@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch express/server.ts",
-    "build": "next build",
+    "build": "node -e \"console.log('No backend build required for Express runtime')\"",
     "start": "tsx express/server.ts",
     "express:start": "tsx express/server.ts",
     "next:dev": "next dev",
@@ -17,6 +17,7 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "mongoose": "^9.4.1",
     "next": "16.0.7",
@@ -25,6 +26,7 @@
     "react-dom": "19.2.0",
     "recharts": "^3.7.0",
     "resend": "^6.9.1",
+    "tsx": "^4.21.0",
     "zod": "^4.1.13"
   },
   "devDependencies": {
@@ -37,7 +39,6 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/supertest": "^6.0.3",
-    "dotenv": "^17.2.3",
     "eslint": "^9.39.1",
     "eslint-config-next": "16.0.7",
     "jest": "^30.2.0",
@@ -46,7 +47,6 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

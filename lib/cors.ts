@@ -5,6 +5,7 @@
 // true together with a wildcard origin.
 export const ALLOWED_ORIGINS = [
   'http://localhost:5173',
+  'https://phlakesfabrics.vercel.app',
   'https://phlakesfabrics-frontend.vercel.app',
   'https://www.phlakesfabrics.com',
   'https://phlakesfabrics.com',

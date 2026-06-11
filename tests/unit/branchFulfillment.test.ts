@@ -5,10 +5,10 @@ describe('branchFulfillment', () => {
     const branch = selectFulfillmentBranch({
       preferredBranchId: 'branch-1',
       customerState: 'Imo',
-      customerCity: 'Owerri',
+      customerCity: 'lagos',
       items: [{ productId: 'product-1', quantity: 2 }],
       branches: [
-        { id: 'branch-1', name: 'Owerri Central', isActive: true, address: { state: 'Imo', city: 'Owerri' } },
+        { id: 'branch-1', name: 'lagos Central', isActive: true, address: { state: 'Imo', city: 'lagos' } },
         { id: 'branch-2', name: 'Umuahia Branch', isActive: true, address: { state: 'Abia', city: 'Umuahia' } },
       ],
       inventoryRecords: [
@@ -23,11 +23,11 @@ describe('branchFulfillment', () => {
   test('falls back to the branch that matches the customer state', () => {
     const branch = selectFulfillmentBranch({
       customerState: 'Imo',
-      customerCity: 'Owerri',
+      customerCity: 'lagos',
       items: [{ productId: 'product-1', quantity: 1 }],
       branches: [
         { id: 'branch-1', name: 'Lagos Hub', isActive: true, address: { state: 'Lagos', city: 'Ikeja' } },
-        { id: 'branch-2', name: 'Owerri Hub', isActive: true, address: { state: 'Imo', city: 'Owerri' } },
+        { id: 'branch-2', name: 'lagos Hub', isActive: true, address: { state: 'Imo', city: 'lagos' } },
       ],
       inventoryRecords: [
         { branchId: 'branch-1', productId: 'product-1', quantity: 5, reservedQuantity: 0 },
@@ -48,9 +48,9 @@ describe('branchFulfillment', () => {
       branches: [
         {
           id: 'branch-1',
-          name: 'Owerri Hub',
+          name: 'lagos Hub',
           isActive: true,
-          address: { state: 'Imo', city: 'Owerri', latitude: 5.4763, longitude: 7.0259 },
+          address: { state: 'Imo', city: 'lagos', latitude: 5.4763, longitude: 7.0259 },
         },
         {
           id: 'branch-2',
@@ -102,7 +102,7 @@ describe('branchFulfillment', () => {
     const branch = selectFulfillmentBranch({
       customerState: 'Imo',
       items: [{ productId: 'product-1', quantity: 4 }],
-      branches: [{ id: 'branch-1', name: 'Only Branch', isActive: true, address: { state: 'Imo', city: 'Owerri' } }],
+      branches: [{ id: 'branch-1', name: 'Only Branch', isActive: true, address: { state: 'Imo', city: 'lagos' } }],
       inventoryRecords: [{ branchId: 'branch-1', productId: 'product-1', quantity: 2, reservedQuantity: 0 }],
     });
 

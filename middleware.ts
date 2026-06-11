@@ -5,6 +5,7 @@ import { NextResponse, NextRequest } from 'next/server'
 const ALLOWED_ORIGINS = new Set([
   'http://localhost:5173',
   'http://localhost:5174',
+  'https://phlakesfabrics.vercel.app',
   'https://phlakesfabrics-frontend.vercel.app',
   'https://www.phlakesfabrics.com',
   'https://phlakesfabrics.com',

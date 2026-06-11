@@ -55,12 +55,12 @@ const categories = [
 
 const branches = [
   {
-    name: 'Branch A - Owerri Flagship',
-    slug: 'branch-a-owerri',
+    name: 'Branch A - lagos Flagship',
+    slug: 'branch-a-lagos',
     code: 'BR-A',
-    address: { line1: '12 Fabric Market Road', city: 'Owerri', state: 'Imo', country: 'Nigeria' },
+    address: { line1: '12 Fabric Market Road', city: 'lagos', state: 'Imo', country: 'Nigeria' },
     phone: '+2348010001101',
-    email: 'owerri@phlakesfabrics.local',
+    email: 'lagos@phlakesfabrics.local',
     workloadScore: 1,
     deliveryRadiusKm: 35,
     notes: 'Flagship branch for premium walk-in fabric consultations.',
@@ -510,7 +510,7 @@ async function main() {
 
     productIds.push(doc._id);
 
-    for (const [index, branchSlug] of ['branch-a-owerri', 'branch-b-lagos', 'branch-c-abuja'].entries()) {
+    for (const [index, branchSlug] of ['branch-a-lagos', 'branch-b-lagos', 'branch-c-abuja'].entries()) {
       const branch = branchDocs.get(branchSlug);
       const quantity = product.inventory[index] || 0;
       const lowStockThreshold = product.price > 18000 ? 3 : 6;

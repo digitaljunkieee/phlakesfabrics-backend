@@ -108,7 +108,7 @@ export async function POST(req: Request) {
         const computedItemsTotal = items.reduce((sum: number, item: any) => sum + (Number(item.price) * Number(item.quantity)), 0);
         const finalTotal = parseMoney(total_amount) || parseMoney(total) || parseMoney(body.amount) || computedItemsTotal;
         const safeStreet = customer?.address || (typeof shipping_address === 'string' ? shipping_address : 'Address not provided');
-        const safeCity = customer?.city || body.city || customer?.lga || body.lga || 'Owerri';
+        const safeCity = customer?.city || body.city || customer?.lga || body.lga || 'lagos';
         const safeState = customer?.state || body.state || 'Imo';
         const safePhone = customer?.phone || body.phone || '0000000000';
         const safeLga = customer?.lga || body.lga || customer?.city || body.city || '';
