@@ -1,0 +1,6 @@
+
+> phlakesfabrics_backend@0.1.0 start
+> tsx express/server.ts
+
+2026-06-11T14:21:39.482Z [INFO] Express API server listening on 3000
+[MongoDB] Connected to database

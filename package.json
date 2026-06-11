@@ -1,0 +1,52 @@
+{
+  "name": "phlakesfabrics_backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch express/server.ts",
+    "build": "next build",
+    "start": "tsx express/server.ts",
+    "express:start": "tsx express/server.ts",
+    "next:dev": "next dev",
+    "next:start": "next start",
+    "lint": "eslint",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "mongoose": "^9.4.1",
+    "next": "16.0.7",
+    "next-auth": "^4.24.14",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "recharts": "^3.7.0",
+    "resend": "^6.9.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/supertest": "^6.0.3",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "16.0.7",
+    "jest": "^30.2.0",
+    "prettier": "^3.7.4",
+    "supertest": "^7.1.4",
+    "tailwindcss": "^4",
+    "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
