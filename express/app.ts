@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import cors from 'cors';
 import mongoose from 'mongoose';
 import path from 'node:path';
+import { resolveMongoUri } from '../lib/mongodb';
 import { mountNextApiRoutes } from './nextRouteAdapter';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env'), quiet: true });
@@ -31,15 +32,11 @@ function mongoState() {
 }
 
 async function ensureMongoConnection() {
-  const uri = process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL;
-  if (!uri) {
-    return { configured: false, state: mongoState() };
-  }
-
   if (mongoose.connection.readyState === 1) {
     return { configured: true, state: mongoState() };
   }
 
+  const { uri } = resolveMongoUri();
   await mongoose.connect(uri);
   return { configured: true, state: mongoState() };
 }
