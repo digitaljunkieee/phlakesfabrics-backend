@@ -8,8 +8,8 @@ describe('role helpers', () => {
   });
 
   it('maps roles to the correct home paths', () => {
-    expect(getRoleHomePath('super_admin')).toBe('/admin');
-    expect(getRoleHomePath('delivery')).toBe('/staff');
+    expect(getRoleHomePath('super_admin')).toBe('/admin/dashboard');
+    expect(getRoleHomePath('delivery')).toBe('/admin/dashboard');
     expect(getRoleHomePath('customer')).toBe('/dashboard');
   });
 

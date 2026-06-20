@@ -3,7 +3,7 @@ export {};
 import { NextResponse, NextRequest } from 'next/server'
 import { getUserFromRequest } from '../../../../lib/auth'
 import corsHeaders from '../../../../lib/cors'
-import { normalizeRole } from '../../../../lib/roles'
+import { OPERATIONAL_ROLES, normalizeRole } from '../../../../lib/roles'
 
 // Support preflight for admin endpoints. We echo origin and allow credentials
 export async function OPTIONS(req: NextRequest) {
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     }
 
     const role = normalizeRole((user as any)?.role)
-    if (!['admin', 'super_admin'].includes(role)) {
+    if (!OPERATIONAL_ROLES.includes(role)) {
       const headers = corsHeaders(req.headers.get('origin') ?? undefined, true)
       return NextResponse.json({ error: 'Forbidden' }, { status: 403, headers })
     }

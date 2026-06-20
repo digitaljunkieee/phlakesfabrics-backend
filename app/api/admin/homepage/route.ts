@@ -40,7 +40,7 @@ export async function PUT(req: Request) {
     const content = await HomepageContent.findOneAndUpdate(
       { key: 'main' },
       { $set: { banners, sections } },
-      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: 'after', runValidators: true, setDefaultsOnInsert: true }
     ).lean();
 
     return NextResponse.json({ success: true, data: formatHomepageContent(content) }, { status: 200 });

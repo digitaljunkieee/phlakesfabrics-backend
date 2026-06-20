@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest) {
         },
       },
     },
-    { new: true }
+    { returnDocument: 'after' }
   ).select('-password').lean();
 
   return NextResponse.json({ success: true, data: formatAddress(updated) });

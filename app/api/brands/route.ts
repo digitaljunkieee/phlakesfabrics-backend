@@ -7,7 +7,7 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const brands = await Brand.find({}).sort({ name: 1 }).lean();
+    const brands = await Brand.find({ isActive: { $ne: false } }).sort({ name: 1 }).lean();
     const [brandIdCounts, brandNameCounts] = await Promise.all([
       Product.aggregate([
         { $match: { status: 'published', brand_id: { $nin: [null, ''] } } },
@@ -27,6 +27,7 @@ export async function GET() {
       ...brand,
       id: brand._id.toString(),
       _id: undefined,
+      isActive: brand.isActive !== false,
       productCount:
         countMap.get(String(brand.slug)) ||
         countMap.get(String(brand._id)) ||

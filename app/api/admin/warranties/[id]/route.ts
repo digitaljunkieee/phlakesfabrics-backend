@@ -78,7 +78,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     const { id } = await context.params;
     if (!mongoose.Types.ObjectId.isValid(id)) return NextResponse.json({ success: false, error: 'Warranty not found' }, { status: 404 });
     await dbConnect();
-    const warranty = await Warranty.findByIdAndUpdate(id, { $set: buildPayload(await req.json()) }, { new: true, runValidators: true });
+    const warranty = await Warranty.findByIdAndUpdate(id, { $set: buildPayload(await req.json()) }, { returnDocument: 'after', runValidators: true });
     if (!warranty) return NextResponse.json({ success: false, error: 'Warranty not found' }, { status: 404 });
     const populated = await populateWarranty(Warranty.findById(warranty._id)).lean();
     return NextResponse.json({ success: true, data: formatWarranty(populated), warranty: formatWarranty(populated) });
@@ -100,7 +100,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     const hard = ['1', 'true', 'yes'].includes(cleanString(url.searchParams.get('hard')).toLowerCase());
     const warranty = hard
       ? await Warranty.findByIdAndDelete(id)
-      : await Warranty.findByIdAndUpdate(id, { $set: { status: 'closed' } }, { new: true });
+      : await Warranty.findByIdAndUpdate(id, { $set: { status: 'closed' } }, { returnDocument: 'after' });
     if (!warranty) return NextResponse.json({ success: false, error: 'Warranty not found' }, { status: 404 });
     return NextResponse.json({ success: true, data: hard ? null : formatWarranty(warranty) });
   } catch (error) {

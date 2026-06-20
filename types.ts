@@ -9,6 +9,7 @@ export interface Product {
   price: number
   compare_at_price?: number | null
   category_id?: string
+  homepage_sections?: string[]
   images?: string[]
   specs?: Record<string, unknown>
   stock?: number

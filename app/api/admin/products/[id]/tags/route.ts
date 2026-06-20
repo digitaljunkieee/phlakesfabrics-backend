@@ -75,7 +75,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     const product = await Product.findOneAndUpdate(
       productIdentifierQuery(id),
       { $set: update },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).lean();
 
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });

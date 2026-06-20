@@ -4,6 +4,9 @@ import { NextResponse, NextRequest } from 'next/server'
 // Global CORS middleware - single place to manage CORS for /api/*
 const ALLOWED_ORIGINS = new Set([
   'http://localhost:5173',
+  'http://localhost:3001',
+  'http://127.0.0.1:3001',
+  'https://localhost:3001',
   'http://localhost:5174',
   'https://phlakesfabrics.vercel.app',
   'https://phlakesfabrics-frontend.vercel.app',

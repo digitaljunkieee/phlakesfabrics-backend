@@ -335,9 +335,12 @@ function renderItemsRows(items: any[] = []) {
       const name = escapeHtml(it?.name || it?.title || 'Item')
       const qty = Number(it?.qty ?? it?.quantity ?? 1)
       const price = formatCurrency(it?.price ?? it?.amount ?? 0)
+      const color = escapeHtml(it?.selectedColor || it?.selected_color || it?.color || '')
+      const unit = escapeHtml(it?.selectedUnit || it?.unit || '')
+      const meta = [color ? `Color: ${color}` : '', unit ? `Unit: ${unit}` : ''].filter(Boolean).join(' &middot; ')
       return `
         <tr style="border-bottom:1px solid #e5e7eb">
-          <td style="padding:8px 12px">${name}</td>
+          <td style="padding:8px 12px">${name}${meta ? `<div style="margin-top:4px;color:#6b7280;font-size:12px">${meta}</div>` : ''}</td>
           <td style="padding:8px 12px;text-align:center">${qty}</td>
           <td style="padding:8px 12px;text-align:right">${price}</td>
         </tr>`

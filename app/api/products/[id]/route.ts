@@ -136,12 +136,10 @@ export async function PATCH(req: Request, props: { params: Promise<{ id: string 
     // Parse the incoming data (e.g., { category: "69ef..." })
     const body = await req.json();
 
-    // Find the product by ID and update it with the new fields
     const updatedProduct = await Product.findByIdAndUpdate(
       params.id,
-      { $set: body }, // $set ensures we only update the fields provided
-      // 🚨 FIX 2: Fixed the Mongoose deprecation warning (replaced 'new: true' with 'returnDocument: "after"')
-      { returnDocument: 'after', runValidators: true } 
+      { $set: body },
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updatedProduct) {

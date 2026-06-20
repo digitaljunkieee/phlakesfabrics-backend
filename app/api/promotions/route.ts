@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import dbConnect from '../../../lib/mongodb';
 import Product from '../../../models/Product';
 
+const PROMOTION_SECTION_KEYS = ['campaign-shelf', 'promotional-fabrics'];
+
 function formatProduct(product: any) {
   return {
     ...product,
@@ -19,21 +21,13 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || '8'), 1), 24);
 
-    let products = await Product.find({
+    const products = await Product.find({
       status: 'published',
-      $or: [
-        { isFeatured: true },
-        { discount: { $gt: 0 } },
-        { compare_at_price: { $gt: 0 } },
-      ],
+      homepage_sections: { $in: PROMOTION_SECTION_KEYS },
     })
       .sort({ updatedAt: -1, createdAt: -1 })
       .limit(limit)
       .lean();
-
-    if (products.length === 0) {
-      products = await Product.find({ status: 'published' }).sort({ createdAt: -1 }).limit(limit).lean();
-    }
 
     return NextResponse.json({
       success: true,

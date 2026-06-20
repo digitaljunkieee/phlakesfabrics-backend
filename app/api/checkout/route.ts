@@ -32,6 +32,38 @@ function normalizeFulfillmentType(value: any) {
     return normalized === 'pickup' ? 'pickup' : 'delivery';
 }
 
+function normalizeHexColor(value: any) {
+    const trimmed = cleanString(value);
+    if (/^#[0-9a-f]{6}$/i.test(trimmed)) return trimmed;
+    if (/^[0-9a-f]{6}$/i.test(trimmed)) return `#${trimmed}`;
+    return '';
+}
+
+function normalizeProductColors(product: any) {
+    const raw = Array.isArray(product?.colors)
+        ? product.colors
+        : typeof product?.colors === 'string'
+            ? (() => {
+                try {
+                    const parsed = JSON.parse(product.colors);
+                    return Array.isArray(parsed) ? parsed : product.colors.split(/[|,;]/);
+                } catch {
+                    return product.colors.split(/[|,;]/);
+                }
+            })()
+            : [];
+
+    return raw
+        .map((color: any) => {
+            if (typeof color === 'string') return { name: cleanString(color), hex: '' };
+            return {
+                name: cleanString(color?.name || color?.label || color?.value),
+                hex: normalizeHexColor(color?.hex || color?.color || color?.code),
+            };
+        })
+        .filter((color: any) => color.name);
+}
+
 function productLookupQuery(identifier: string) {
     const clauses: Record<string, any>[] = [{ slug: identifier }, { id: identifier }, { external_id: identifier }, { product_id: identifier }];
     if (mongoose.Types.ObjectId.isValid(identifier)) clauses.unshift({ _id: identifier });
@@ -60,6 +92,20 @@ async function normalizeItems(items: any[] = []) {
         const price = productPrice > 0 ? productPrice : parseMoney(item.price);
         const weight = parseMoney(item.weight) || parseMoney((product as any).weight) || parseMoney((product as any).specs?.weight) || 1;
         const selectedUnit = cleanString(item.selectedUnit || item.unit || item.selected_unit) || 'Per Yard';
+        const requestedColor = cleanString(item.selectedColor || item.selected_color || item.color || item.colour);
+        const productColors = normalizeProductColors(product);
+        const selectedProductColor = requestedColor
+            ? productColors.find((color: any) => color.name.toLowerCase() === requestedColor.toLowerCase()) || null
+            : null;
+
+        if (productColors.length > 0 && !requestedColor) {
+            throw new Error(`Please choose a color for "${(product as any).name || (product as any).title || item.name || 'this product'}".`);
+        }
+
+        if (requestedColor && productColors.length > 0 && !selectedProductColor) {
+            throw new Error(`"${requestedColor}" is not an available color for "${(product as any).name || (product as any).title || item.name || 'this product'}".`);
+        }
+
         const fulfillmentType = normalizeFulfillmentType(item.fulfillmentType || item.fulfillment_type);
         const selectedBranchId = cleanString(item.selectedBranchId || item.selected_branch_id || item.branchId || item.branch_id || item.pickupBranch?.branchId);
         const selectedBranchName = cleanString(item.selectedBranchName || item.selected_branch_name || item.branchName || item.branch_name || item.pickupBranch?.branchName);
@@ -74,6 +120,8 @@ async function normalizeItems(items: any[] = []) {
             price,
             weight,
             selectedUnit,
+            selectedColor: selectedProductColor?.name || requestedColor || '',
+            selectedColorHex: selectedProductColor?.hex || normalizeHexColor(item.selectedColorHex || item.selected_color_hex) || '',
             fulfillmentType,
             selectedBranchId,
             selectedBranchName,
@@ -310,6 +358,8 @@ export async function POST(req: Request) {
                     quantity: Number(i.quantity || i.qty || 1), 
                     price: Number(i.price),
                     unit: i.selectedUnit || i.unit || null,
+                    selectedColor: i.selectedColor || null,
+                    selectedColorHex: i.selectedColorHex || null,
                     fulfillmentType: i.fulfillmentType || orderFulfillmentType,
                     pickupBranch: i.fulfillmentType === 'pickup' ? (i.selectedBranchId || pickupBranchId) : null,
                     pickupBranchName: i.fulfillmentType === 'pickup' ? (i.selectedBranchName || pickupBranchName) : null,
@@ -401,6 +451,9 @@ export async function POST(req: Request) {
             if (txError.message.includes('Sorry,')) {
                 return NextResponse.json({ success: false, error: txError.message }, { status: 409 });
             }
+            if (txError.message.includes('Please choose a color') || txError.message.includes('available color')) {
+                return NextResponse.json({ success: false, error: txError.message }, { status: 400 });
+            }
             throw txError;
         } finally {
             session.endSession();
@@ -452,6 +505,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: message }, { status: 404 });
         }
         if (message.toLowerCase().includes('missing required order data')) {
+            return NextResponse.json({ success: false, error: message }, { status: 400 });
+        }
+        if (message.includes('Please choose a color') || message.includes('available color')) {
             return NextResponse.json({ success: false, error: message }, { status: 400 });
         }
         return NextResponse.json({ success: false, error: error.message || 'Internal server error during checkout.' }, { status: 500 });

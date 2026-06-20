@@ -226,7 +226,7 @@ export async function POST(req: Request) {
           lastAdjustedBy: auth.user?.id || null,
         }),
       },
-      { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
+      { returnDocument: 'after', upsert: true, runValidators: true, setDefaultsOnInsert: true }
     )
       .populate('branch', 'name slug code isActive address')
       .populate('product', 'name title slug price stock images status')

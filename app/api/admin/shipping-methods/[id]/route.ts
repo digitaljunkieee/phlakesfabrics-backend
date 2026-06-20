@@ -99,7 +99,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
     await dbConnect();
     const { id } = await context.params;
     const payload = buildPayload(await req.json());
-    const method = await ShippingMethod.findByIdAndUpdate(id, { $set: payload }, { new: true, runValidators: true })
+    const method = await ShippingMethod.findByIdAndUpdate(id, { $set: payload }, { returnDocument: 'after', runValidators: true })
       .populate({ path: 'branch', select: 'name slug code', model: Branch });
     if (!method) return NextResponse.json({ success: false, error: 'Shipping method not found' }, { status: 404 });
     return NextResponse.json({ success: true, data: formatMethod(method), method: formatMethod(method) });
@@ -120,7 +120,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     const hard = ['1', 'true', 'yes'].includes(cleanString(url.searchParams.get('hard')).toLowerCase());
     const method = hard
       ? await ShippingMethod.findByIdAndDelete(id)
-      : await ShippingMethod.findByIdAndUpdate(id, { $set: { isActive: false } }, { new: true });
+      : await ShippingMethod.findByIdAndUpdate(id, { $set: { isActive: false } }, { returnDocument: 'after' });
     if (!method) return NextResponse.json({ success: false, error: 'Shipping method not found' }, { status: 404 });
     return NextResponse.json({ success: true, data: hard ? null : formatMethod(method) });
   } catch (error) {

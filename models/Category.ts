@@ -5,6 +5,7 @@ const CategorySchema = new mongoose.Schema({
   slug: { type: String, required: true, unique: true },
   description: { type: String },
   parent_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Category' },
+  isActive: { type: Boolean, default: true },
   isComingSoon: { type: Boolean, default: false },
   sortOrder: { type: Number, default: 999 },
 }, { timestamps: true });

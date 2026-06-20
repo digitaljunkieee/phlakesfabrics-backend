@@ -160,7 +160,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
       lastAdjustedBy: payload.lastAdjustedBy || auth.user?.id || null,
     });
 
-    const inventory = await Inventory.findOneAndUpdate(filter, { $set: updates }, { new: true, runValidators: true })
+    const inventory = await Inventory.findOneAndUpdate(filter, { $set: updates }, { returnDocument: 'after', runValidators: true })
       .populate('branch', 'name slug code isActive address')
       .populate('product', 'name title slug price stock images status')
       .lean();
@@ -248,7 +248,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
           lastAdjustedBy: auth.user?.id || null,
         },
       },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     )
       .populate('branch', 'name slug code isActive address')
       .populate('product', 'name title slug price stock images status')

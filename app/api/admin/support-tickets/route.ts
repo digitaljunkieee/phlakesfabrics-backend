@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest) {
     const ticket = await SupportTicket.findByIdAndUpdate(
       body.id,
       { $set: { status: (body.status || 'open').toLowerCase() } },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).populate('user', 'email name phone').lean();
 
     if (!ticket) return NextResponse.json({ success: false, error: 'Ticket not found' }, { status: 404 });

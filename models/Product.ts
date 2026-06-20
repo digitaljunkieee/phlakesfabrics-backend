@@ -21,6 +21,7 @@ export interface IProduct extends Document {
   brand?: string;
   brand_id?: string;
   collection_id?: string;
+  homepage_sections?: string[];
   isFeatured: boolean;
   is_featured?: boolean;
   specs?: Record<string, any>;
@@ -130,6 +131,25 @@ const ProductSchema = new Schema<IProduct>(
       type: String,
       trim: true,
       default: '',
+    },
+    homepage_sections: {
+      type: [String],
+      default: [],
+      set: (values: unknown) => {
+        const rawValues = Array.isArray(values)
+          ? values
+          : typeof values === 'string'
+            ? values.split(',')
+            : [];
+
+        return Array.from(
+          new Set(
+            rawValues
+              .map((value) => String(value ?? '').trim().toLowerCase())
+              .filter(Boolean)
+          )
+        );
+      },
     },
     isFeatured: {
       type: Boolean,

@@ -102,7 +102,7 @@ export async function PATCH(req: NextRequest, ctx?: { params?: Promise<{ id: str
 
     allowed.deliveryUpdatedBy = auth.user?.id || null;
 
-    const updatedOrder = await Order.findOneAndUpdate(filter, { $set: allowed }, { new: true, runValidators: true }).lean();
+    const updatedOrder = await Order.findOneAndUpdate(filter, { $set: allowed }, { returnDocument: 'after', runValidators: true }).lean();
     if (!updatedOrder) {
       return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
     }

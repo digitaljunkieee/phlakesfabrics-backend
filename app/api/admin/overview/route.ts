@@ -12,7 +12,7 @@ type OrderTotalDoc = {
 };
 
 export async function GET(req: NextRequest) {
-  const auth = await requireAuthWithRole(req, ['admin', 'super_admin', 'branch_manager']);
+  const auth = await requireAuthWithRole(req, ['admin', 'super_admin', 'branch_manager', 'sales_staff']);
   if (!auth.authorized) return auth.response;
 
   try {

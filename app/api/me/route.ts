@@ -14,6 +14,7 @@ function formatUser(user: any) {
     role: user.role ?? 'customer',
     name: user.name ?? null,
     phone: user.phone ?? '',
+    branch: user.branch ? String(user.branch._id || user.branch.id || user.branch) : null,
     emailVerified: user.emailVerified !== false,
     address: address.line1 || address.street || user.address || '',
     city: address.city || user.city || '',
@@ -71,7 +72,7 @@ export async function PATCH(req: NextRequest, ctx?: { params?: Promise<any> }) {
           },
         },
       },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).select('-password').lean()
 
     if (!updated) return NextResponse.json({ success: false, error: 'User not found' }, { status: 404, headers })

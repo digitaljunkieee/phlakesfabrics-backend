@@ -4,6 +4,7 @@ import dbConnect from '../../../../../lib/mongodb';
 import Product from '../../../../../models/Product';
 import { requireAuthWithRole } from '../../../../../lib/requireAuth';
 import { buildProductPayload, formatProduct } from '../../../../../lib/adminProduct';
+import { isAdminRole } from '../../../../../lib/roles';
 
 function productIdentifierQuery(id: string) {
   const clauses: Record<string, any>[] = [{ slug: id }, { id }];
@@ -13,18 +14,24 @@ function productIdentifierQuery(id: string) {
 
 export async function PATCH(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireAuthWithRole(req, 'admin');
+    const auth = await requireAuthWithRole(req, ['admin', 'super_admin', 'branch_manager', 'sales_staff']);
     if (!auth.authorized) return auth.response;
 
     await dbConnect();
     const body = await req.json();
-    const payload = buildProductPayload(body, 'update');
+    const payload = isAdminRole(auth.user?.role)
+      ? buildProductPayload(body, 'update')
+      : buildProductPayload({ colors: body?.colors }, 'update');
+
+    if (!isAdminRole(auth.user?.role) && body?.colors === undefined) {
+      return NextResponse.json({ error: 'Staff can only update product colors' }, { status: 403 });
+    }
     const { id } = await context.params;
 
     const updatedProduct = await Product.findOneAndUpdate(
       productIdentifierQuery(id),
       { $set: payload },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).lean();
     
     if (!updatedProduct) {

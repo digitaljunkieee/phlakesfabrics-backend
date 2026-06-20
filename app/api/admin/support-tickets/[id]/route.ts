@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
     const ticket = await SupportTicket.findByIdAndUpdate(
       id,
       { $set: { status } },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).populate('user', 'email name phone').lean();
 
     if (!ticket) return NextResponse.json({ success: false, error: 'Ticket not found' }, { status: 404 });

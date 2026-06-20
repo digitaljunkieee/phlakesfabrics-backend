@@ -3,17 +3,27 @@ import dbConnect from '../../../../lib/mongodb';
 import { requireAuthWithRole } from '../../../../lib/requireAuth';
 import Order from '../../../../models/Order';
 import SupportTicket from '../../../../models/SupportTicket';
+import { isAdminRole } from '../../../../lib/roles';
+import { resolveStaffScope } from '../../../../lib/staffScope';
 
 export async function GET(req: Request) {
-  const auth = await requireAuthWithRole(req, 'admin');
+  const auth = await requireAuthWithRole(req, ['admin', 'super_admin', 'branch_manager', 'sales_staff', 'delivery']);
   if (!auth.authorized) return auth.response;
 
   try {
     await dbConnect();
+    const scope = await resolveStaffScope(auth.user);
+
+    if (scope.branchScoped && !scope.hasBranchAccess) {
+      return NextResponse.json({ notifications: [] }, { status: 200 });
+    }
+
+    const orderQuery = scope.branchScoped && scope.branchId ? { branch: scope.branchId } : {};
+    const canSeeSupportTickets = isAdminRole(auth.user?.role);
 
     const [orders, tickets] = await Promise.all([
-      Order.find({}).sort({ createdAt: -1 }).limit(10).lean(),
-      SupportTicket.find({}).sort({ createdAt: -1 }).limit(10).lean(),
+      Order.find(orderQuery).sort({ createdAt: -1 }).limit(10).lean(),
+      canSeeSupportTickets ? SupportTicket.find({}).sort({ createdAt: -1 }).limit(10).lean() : Promise.resolve([]),
     ]);
 
     const notifications = [

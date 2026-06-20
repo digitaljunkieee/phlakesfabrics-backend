@@ -11,6 +11,7 @@ export type AppRole = (typeof APP_ROLES)[number];
 
 export const ADMIN_ROLES: AppRole[] = ['admin', 'super_admin'];
 export const STAFF_ROLES: AppRole[] = ['branch_manager', 'sales_staff', 'delivery'];
+export const OPERATIONAL_ROLES: AppRole[] = ['admin', 'super_admin', ...STAFF_ROLES];
 export const BRANCH_OPERATIONS_ROLES: AppRole[] = ['super_admin', 'admin', 'branch_manager', 'sales_staff'];
 export const DELIVERY_ROLES: AppRole[] = ['super_admin', 'admin', 'delivery'];
 
@@ -36,7 +37,6 @@ export function isStaffRole(role: unknown) {
 
 export function getRoleHomePath(role: unknown) {
   const normalized = normalizeRole(role);
-  if (ADMIN_ROLES.includes(normalized)) return '/admin';
-  if (['branch_manager', 'sales_staff', 'delivery'].includes(normalized)) return '/staff';
+  if (OPERATIONAL_ROLES.includes(normalized)) return '/admin/dashboard';
   return '/dashboard';
 }

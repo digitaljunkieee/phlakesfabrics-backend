@@ -6,6 +6,8 @@ export interface IOrderItem {
   quantity: number;
   price: number;
   unit?: string | null;
+  selectedColor?: string | null;
+  selectedColorHex?: string | null;
   fulfillmentType?: 'pickup' | 'delivery' | null;
   pickupBranch?: Types.ObjectId | null;
   pickupBranchName?: string | null;
@@ -111,6 +113,16 @@ const OrderItemSchema = new Schema(
       min: [0, 'Price cannot be negative'],
     },
     unit: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    selectedColor: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    selectedColorHex: {
       type: String,
       default: null,
       trim: true,

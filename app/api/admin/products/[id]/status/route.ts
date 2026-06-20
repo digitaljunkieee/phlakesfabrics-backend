@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
   }
 
   await dbConnect();
-  const product = await Product.findByIdAndUpdate(id, { $set: { status: newStatus } }, { new: true, runValidators: true }).lean();
+  const product = await Product.findByIdAndUpdate(id, { $set: { status: newStatus } }, { returnDocument: 'after', runValidators: true }).lean();
   if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   return NextResponse.json({ success: true, product: formatProduct(product) });
 }

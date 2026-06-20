@@ -27,6 +27,29 @@ function toArraySafe(v: any): any[] {
   return []
 }
 
+function toStringList(v: any): string[] {
+  const values = Array.isArray(v)
+    ? v
+    : typeof v === 'string'
+      ? (() => {
+          try {
+            const parsed = JSON.parse(v)
+            return Array.isArray(parsed) ? parsed : v.split(/[|,;]/)
+          } catch {
+            return v.split(/[|,;]/)
+          }
+        })()
+      : []
+
+  return Array.from(
+    new Set(
+      values
+        .map((item) => cleanString(item).toLowerCase())
+        .filter(Boolean)
+    )
+  )
+}
+
 function toObjectSafe(v: any): AnyObj {
   if (!v) return {}
   if (typeof v === 'object' && !Array.isArray(v)) return v
@@ -115,6 +138,10 @@ export function normalizeProductPayload(input: any): Record<string, any> {
   if (src.collectionId !== undefined) out.collection_id = cleanString(src.collectionId)
   else if (src.collection_id !== undefined) out.collection_id = cleanString(src.collection_id)
 
+  if (src.homepageSections !== undefined) out.homepage_sections = toStringList(src.homepageSections)
+  else if (src.homepage_sections !== undefined) out.homepage_sections = toStringList(src.homepage_sections)
+  else if (src.homepage_section !== undefined) out.homepage_sections = toStringList(src.homepage_section)
+
   if (src.image !== undefined) out.image = src.image ?? null
   if (src.images !== undefined) {
     out.images = toArraySafe(src.images)
@@ -172,6 +199,7 @@ export function formatProduct(product: any): Record<string, any> {
     category: cleanString(raw.category || raw.category_id),
     brand_id: cleanString(raw.brand_id || raw.brand),
     collection_id: cleanString(raw.collection_id),
+    homepage_sections: toStringList(raw.homepage_sections),
     isFeatured: Boolean(raw.isFeatured ?? raw.is_featured ?? false),
     images,
     image: raw.image || images[0] || null,

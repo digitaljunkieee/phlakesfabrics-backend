@@ -181,7 +181,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ id: strin
       }
     }
 
-    const branch = await Branch.findByIdAndUpdate(id, { $set: payload }, { new: true, runValidators: true })
+    const branch = await Branch.findByIdAndUpdate(id, { $set: payload }, { returnDocument: 'after', runValidators: true })
       .populate('manager', 'name email role')
       .lean();
 
@@ -204,7 +204,7 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
     const branch = await Branch.findByIdAndUpdate(
       id,
       { $set: { isActive: false } },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     )
       .populate('manager', 'name email role')
       .lean();

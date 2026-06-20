@@ -2,31 +2,26 @@ import { NextResponse } from 'next/server';
 import dbConnect from '../../../../lib/mongodb';
 import Category from '../../../../models/Category';
 import { requireAuthWithRole } from '../../../../lib/requireAuth';
-import { findStoreCategory, STORE_CATEGORIES, STORE_CATEGORY_SLUGS } from '../../../../lib/storeCategories';
 
-async function ensureStoreCategories() {
-  await Promise.all(STORE_CATEGORIES.map((category) => (
-    Category.updateOne(
-      { slug: category.slug },
-      {
-        $set: {
-          name: category.name,
-          slug: category.slug,
-          sortOrder: category.sortOrder,
-        },
-        $setOnInsert: { isComingSoon: category.isComingSoon },
-      },
-      { upsert: true }
-    )
-  )));
+function slugify(value = '') {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+}
+
+function formatCategory(category: any) {
+  const obj = typeof category.toObject === 'function' ? category.toObject() : category;
+  return {
+    ...obj,
+    id: obj._id?.toString?.() || obj.id,
+    _id: undefined,
+    isActive: obj.isActive !== false,
+  };
 }
 
 export async function GET(req: Request) {
   try {
     await dbConnect();
-    await ensureStoreCategories();
-    const categories = await Category.find({ slug: { $in: STORE_CATEGORY_SLUGS } }).sort({ sortOrder: 1, name: 1 }).lean();
-    const formatted = categories.map((c: any) => ({ ...c, id: c._id.toString(), _id: undefined }));
+    const categories = await Category.find({}).sort({ sortOrder: 1, name: 1 }).lean();
+    const formatted = categories.map(formatCategory);
     return NextResponse.json({ success: true, categories: formatted, data: formatted }, { status: 200 });
   } catch {
     return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
@@ -42,30 +37,15 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     if (!body.slug && body.name) {
-      body.slug = body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      body.slug = slugify(body.name);
     }
 
-    const canonical = findStoreCategory(body.slug);
-    if (!canonical) {
-      return NextResponse.json({
-        error: 'Categories are fixed to the approved Phlakes Fabrics category list.',
-      }, { status: 400 });
-    }
+    body.slug = slugify(body.slug);
+    body.isActive = body.isActive !== false;
+    if (body.parent_id === '') body.parent_id = undefined;
 
-    const category = await Category.findOneAndUpdate(
-      { slug: canonical.slug },
-      {
-        $set: {
-          name: canonical.name,
-          slug: canonical.slug,
-          sortOrder: canonical.sortOrder,
-        },
-        $setOnInsert: { isComingSoon: canonical.isComingSoon },
-        $unset: { parent_id: '' },
-      },
-      { upsert: true, new: true, runValidators: true, setDefaultsOnInsert: true }
-    );
-    const formatted = { ...category.toObject(), id: category._id.toString(), _id: undefined };
+    const category = await Category.create(body);
+    const formatted = formatCategory(category);
     return NextResponse.json({ success: true, category: formatted }, { status: 201 });
   } catch (error: any) {
     console.error('Category Create Error:', error);
