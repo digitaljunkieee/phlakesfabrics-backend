@@ -1,23 +1,30 @@
+import { fabricImage } from './fabricAssets';
+
 type AnyRecord = Record<string, any>;
+
+const DEFAULT_PROMO_IMAGES = [
+  fabricImage('heroimg4.jpg'),
+  fabricImage('heroimg5.jpg'),
+];
 
 export const DEFAULT_HOMEPAGE_BANNERS = [
   {
-    title: 'Lace and George pieces for ceremonies, owambe, and bridal styling',
+    title: 'Brocade and organdy brocade pieces for ceremonies and bridal styling',
     subtitle: 'Promotional picks with branch pickup and delivery options.',
     ctaLabel: 'Shop the edit',
-    href: '/shop?category=lace',
-    image: '',
+    href: '/shop?category=organdy-brocade',
+    image: DEFAULT_PROMO_IMAGES[0],
     placement: 'homepage_promo',
     tone: 'red',
     isActive: true,
     sortOrder: 10,
   },
   {
-    title: 'Cotton, voile, and chiffon for daily tailoring',
+    title: 'Wool and tessile fabrics for daily tailoring',
     subtitle: 'Affordable fabrics for everyday outfits and quick tailoring needs.',
-    ctaLabel: 'Browse affordable picks',
-    href: '/shop?category=cotton',
-    image: '',
+    ctaLabel: 'Browse tailoring picks',
+    href: '/shop?category=wool',
+    image: DEFAULT_PROMO_IMAGES[1],
     placement: 'homepage_promo',
     tone: 'teal',
     isActive: true,

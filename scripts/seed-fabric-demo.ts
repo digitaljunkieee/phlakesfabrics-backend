@@ -1,5 +1,6 @@
 import path from 'path';
 import dotenv from 'dotenv';
+import { fabricImage } from '../lib/fabricAssets';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -10,6 +11,14 @@ function slugify(value: string) {
     .replace(/(^-|-$)+/g, '');
 }
 
+function localAsset(fileName: string) {
+  const asset = fabricImage(fileName);
+  if (!asset) {
+    throw new Error(`Missing Cloudinary asset for ${fileName}`);
+  }
+  return asset;
+}
+
 function inventoryStatus(quantity: number, lowStockThreshold: number) {
   if (quantity <= 0) return 'out_of_stock';
   if (lowStockThreshold > 0 && quantity <= lowStockThreshold) return 'low_stock';
@@ -17,40 +26,47 @@ function inventoryStatus(quantity: number, lowStockThreshold: number) {
 }
 
 const imagePool = {
-  ankara: [
-    'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=80',
+  brocade: [
+    localAsset('Brocade By First Lady pink.jpeg'),
+    localAsset('Brocade By First Lady red.jpeg'),
+    localAsset('Brocade By First Lady yellow.jpeg'),
   ],
-  lace: [
-    'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1506629905607-d9ff2e6a6f67?auto=format&fit=crop&w=1200&q=80',
+  wool: [
+    localAsset('Classic Wool by RichMondo black.jpeg'),
+    localAsset('Classic Wool by RichMondo Camel Beige.jpeg'),
+    localAsset('Classic Wool by RichMondo gray.jpeg'),
   ],
-  silk: [
-    'https://images.unsplash.com/photo-1603252109360-909baaf261c7?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1200&q=80',
+  stocks: [
+    localAsset('Design Stocks purple.jpeg'),
+    localAsset('Design Stocks red.jpeg'),
   ],
-  cotton: [
-    'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?auto=format&fit=crop&w=1200&q=80',
+  vanetey: [
+    localAsset('Exclusive Vanetey black.jpeg'),
+    localAsset('Exclusive Vanetey light pink.jpeg'),
+    localAsset('Exclusive Vanetey skyblue.jpeg'),
+  ],
+  isiAgu: [
+    localAsset('isi agu black.jpeg'),
+    localAsset('Isi Agu red.jpeg'),
+  ],
+  organdy: [
+    localAsset('Organdy Brocade By first lady blue.jpeg'),
+    localAsset('Organdy Brocade By first lady pink.jpeg'),
+  ],
+  tessile: [
+    localAsset('Tessile Blue.jpeg'),
+    localAsset('Tessile gray.jpeg'),
   ],
 };
 
 const categories = [
-  'Ankara',
-  'Lace',
-  'Aso Oke',
-  'George',
-  'Chiffon',
-  'Silk',
-  'Cotton',
-  'Voile',
-  'Bridal Fabrics',
-  "Men's Fabrics",
-  "Women's Fabrics",
+  { name: 'Brocade', slug: 'brocade', hint: 'Refined woven fabric for ceremony styling.' },
+  { name: 'Wool', slug: 'wool', hint: 'Structured tailoring with a clean finish.' },
+  { name: 'Design Stocks', slug: 'design-stocks', hint: 'Statement fabrics for elevated looks.' },
+  { name: 'Vanetey', slug: 'vanetey', hint: 'Smooth occasion fabric with a soft drape.' },
+  { name: 'Isi Agu', slug: 'isi-agu', hint: 'Traditional menswear fabric with presence.' },
+  { name: 'Organdy Brocade', slug: 'organdy-brocade', hint: 'Sheer brocade for bridal and reception edits.' },
+  { name: 'Tessile', slug: 'tessile', hint: 'Textured everyday tailoring fabric.' },
 ];
 
 const branches = [
@@ -89,6 +105,8 @@ const branches = [
   },
 ];
 
+const activeCategorySlugs = categories.map((category) => category.slug);
+
 const collections = [
   ['New Arrivals', 'new-arrivals'],
   ['Best Sellers', 'best-sellers'],
@@ -102,260 +120,188 @@ const collections = [
 
 const products = [
   {
-    name: 'Ankara Bloom Wax Print',
-    category: 'Ankara',
+    name: 'First Lady Brocade',
+    category: 'Brocade',
+    categorySlug: 'brocade',
     collection: 'new-arrivals',
-    price: 4500,
-    oldPrice: 6000,
-    rating: 4.8,
-    reviewCount: 42,
-    images: imagePool.ankara,
-    colors: ['Sunflower Yellow', 'Cobalt Blue', 'Coral'],
-    patterns: ['Floral', 'Geometric'],
-    fabricType: 'Ankara wax print',
-    materialComposition: '100% cotton wax',
-    usageSuggestions: ['Everyday dresses', 'Skirts', 'Family occasion outfits'],
-    inventory: [34, 20, 12],
-  },
-  {
-    name: 'Royal Cord Lace Bridal Fabric',
-    category: 'Lace',
-    collection: 'wedding-collection',
     price: 18500,
     oldPrice: 22000,
-    rating: 4.9,
-    reviewCount: 58,
-    images: imagePool.lace,
-    colors: ['Ivory', 'Champagne', 'Rose Gold'],
-    patterns: ['Cord lace', 'Embroidered floral'],
-    fabricType: 'Cord lace',
-    materialComposition: 'Poly-cotton lace with embroidered cord finish',
-    usageSuggestions: ['Bridal gowns', 'Asoebi', 'Reception dresses'],
-    inventory: [10, 8, 5],
+    rating: 4.8,
+    reviewCount: 32,
+    images: imagePool.brocade,
+    colors: [
+      { name: 'Pink', hex: '#f472b6' },
+      { name: 'Red', hex: '#dc2626' },
+      { name: 'Yellow', hex: '#facc15' },
+    ],
+    patterns: ['Luminous brocade', 'Ceremony weave'],
+    fabricType: 'Brocade',
+    materialComposition: 'Premium woven brocade blend',
+    usageSuggestions: ['Owambe styling', 'Statement wrappers', 'Elegant blouses'],
+    inventory: [18, 14, 10],
+    homepageSections: ['new-arrivals', 'campaign-shelf', 'seasonal-collections'],
   },
   {
-    name: 'Heritage Aso Oke Stripe',
-    category: 'Aso Oke',
-    collection: 'staff-picks',
+    name: 'RichMondo Wool',
+    category: 'Wool',
+    categorySlug: 'wool',
+    collection: 'best-sellers',
     price: 12500,
     oldPrice: 15000,
     rating: 4.7,
-    reviewCount: 35,
-    images: imagePool.ankara.slice().reverse(),
-    colors: ['Wine', 'Gold', 'Cream'],
-    patterns: ['Traditional stripe', 'Metallic accent'],
-    fabricType: 'Aso Oke',
-    materialComposition: 'Handwoven cotton blend with lurex detail',
-    usageSuggestions: ['Gele', 'Agbada trims', 'Traditional ceremonies'],
-    inventory: [14, 9, 11],
+    reviewCount: 26,
+    images: imagePool.wool,
+    colors: [
+      { name: 'Black', hex: '#111827' },
+      { name: 'Camel Beige', hex: '#d6b48a' },
+      { name: 'Gray', hex: '#9ca3af' },
+    ],
+    patterns: ['Tailored suiting', 'Soft weave'],
+    fabricType: 'Classic wool',
+    materialComposition: 'Wool-rich suiting blend',
+    usageSuggestions: ['Trousers', 'Jackets', 'Corporate tailoring'],
+    inventory: [9, 11, 8],
+    homepageSections: ['best-sellers', 'affordable-picks', 'staff-picks'],
   },
   {
-    name: 'Emerald George Wrapper Fabric',
-    category: 'George',
-    collection: 'luxury-collection',
-    price: 26000,
-    oldPrice: 31000,
-    rating: 4.9,
-    reviewCount: 31,
-    images: imagePool.silk,
-    colors: ['Emerald', 'Gold', 'Black'],
-    patterns: ['Regal motif', 'Jacquard'],
-    fabricType: 'George wrapper fabric',
-    materialComposition: 'Premium viscose blend with woven motifs',
-    usageSuggestions: ['Wrapper sets', 'Traditional occasions', 'Mother-of-the-bride styling'],
-    inventory: [6, 10, 4],
+    name: 'Design Stocks Premium',
+    category: 'Design Stocks',
+    categorySlug: 'design-stocks',
+    collection: 'trending-fabrics',
+    price: 16500,
+    oldPrice: 19500,
+    rating: 4.6,
+    reviewCount: 21,
+    images: imagePool.stocks,
+    colors: [
+      { name: 'Purple', hex: '#7c3aed' },
+      { name: 'Red', hex: '#dc2626' },
+    ],
+    patterns: ['Bold tonal weave', 'Smooth finish'],
+    fabricType: 'Design stock fabric',
+    materialComposition: 'Structured premium blend',
+    usageSuggestions: ['Modern gowns', 'Tailored dresses', 'Asoebi looks'],
+    inventory: [14, 12, 7],
+    homepageSections: ['trending-fabrics', 'luxury-collection', 'campaign-shelf'],
   },
   {
-    name: 'Pastel Chiffon Flow Fabric',
-    category: 'Chiffon',
-    collection: 'new-arrivals',
-    price: 3800,
-    oldPrice: 5200,
-    rating: 4.4,
-    reviewCount: 18,
-    images: imagePool.silk.slice().reverse(),
-    colors: ['Blush Pink', 'Mint', 'Sky Blue'],
-    patterns: ['Plain', 'Soft drape'],
-    fabricType: 'Chiffon',
-    materialComposition: 'Lightweight polyester chiffon',
-    usageSuggestions: ['Flowy gowns', 'Scarves', 'Layered occasion wear'],
-    inventory: [26, 18, 16],
+    name: 'Exclusive Vanetey',
+    category: 'Vanetey',
+    categorySlug: 'vanetey',
+    collection: 'staff-picks',
+    price: 14500,
+    oldPrice: 17200,
+    rating: 4.5,
+    reviewCount: 19,
+    images: imagePool.vanetey,
+    colors: [
+      { name: 'Black', hex: '#111827' },
+      { name: 'Light Pink', hex: '#f9c2d1' },
+      { name: 'Sky Blue', hex: '#7dd3fc' },
+    ],
+    patterns: ['Soft drape', 'Matte finish'],
+    fabricType: 'Vanetey fabric',
+    materialComposition: 'Smooth fashion fabric blend',
+    usageSuggestions: ['Event wear', 'Blouses', 'Minimal elegant dresses'],
+    inventory: [12, 8, 6],
+    homepageSections: ['staff-picks', 'new-arrivals', 'luxury-collection'],
   },
   {
-    name: 'Pure Silk Champagne Satin',
-    category: 'Silk',
+    name: 'Isi Agu Regal',
+    category: 'Isi Agu',
+    categorySlug: 'isi-agu',
     collection: 'luxury-collection',
     price: 22000,
-    oldPrice: 26500,
-    rating: 4.8,
-    reviewCount: 27,
-    images: imagePool.silk,
-    colors: ['Champagne', 'Pearl', 'Soft Gold'],
-    patterns: ['Plain satin sheen'],
-    fabricType: 'Silk satin',
-    materialComposition: 'Silk-rich satin blend',
-    usageSuggestions: ['Luxury gowns', 'Evening wear', 'Bridal robes'],
-    inventory: [8, 7, 3],
+    oldPrice: 26000,
+    rating: 4.9,
+    reviewCount: 33,
+    images: imagePool.isiAgu,
+    colors: [
+      { name: 'Black', hex: '#111827' },
+      { name: 'Red', hex: '#b91c1c' },
+    ],
+    patterns: ['Regal motif', 'Traditional texture'],
+    fabricType: 'Isi Agu',
+    materialComposition: 'Premium ceremonial fabric blend',
+    usageSuggestions: ['Traditional outfits', 'Occasion wear', 'Royal styling'],
+    inventory: [8, 7, 5],
+    homepageSections: ['best-sellers', 'luxury-collection', 'campaign-shelf'],
   },
   {
-    name: 'Everyday Cotton Adire Print',
-    category: 'Cotton',
-    collection: 'affordable-picks',
-    price: 2800,
-    oldPrice: 3500,
-    rating: 4.5,
-    reviewCount: 49,
-    images: imagePool.cotton,
-    colors: ['Indigo', 'White', 'Ocean Blue'],
-    patterns: ['Adire', 'Tie-dye'],
-    fabricType: 'Cotton print',
-    materialComposition: 'Breathable cotton',
-    usageSuggestions: ['Casual shirts', 'Dresses', 'Children outfits'],
-    inventory: [45, 32, 25],
-  },
-  {
-    name: 'Voile Summer Floral Fabric',
-    category: 'Voile',
-    collection: 'seasonal-collections',
-    price: 3200,
-    oldPrice: 4100,
-    rating: 4.3,
-    reviewCount: 16,
-    images: imagePool.cotton.slice().reverse(),
-    colors: ['Lilac', 'White', 'Leaf Green'],
-    patterns: ['Summer floral'],
-    fabricType: 'Voile',
-    materialComposition: 'Soft cotton voile',
-    usageSuggestions: ['Light kaftans', 'Blouses', 'Resort wear'],
-    inventory: [22, 19, 14],
-  },
-  {
-    name: "Men's Senator Brocade",
-    category: "Men's Fabrics",
-    collection: 'best-sellers',
-    price: 9000,
-    oldPrice: 12000,
-    rating: 4.7,
-    reviewCount: 64,
-    images: imagePool.ankara,
-    colors: ['Navy', 'Charcoal', 'Ivory'],
-    patterns: ['Brocade texture', 'Subtle motif'],
-    fabricType: 'Brocade',
-    materialComposition: 'Cotton-poly brocade',
-    usageSuggestions: ['Senator wear', 'Agbada', 'Traditional shirts'],
-    inventory: [18, 26, 15],
-  },
-  {
-    name: "Women's Luxury Organza Applique",
-    category: "Women's Fabrics",
-    collection: 'trending-fabrics',
-    price: 14500,
-    oldPrice: 18000,
-    rating: 4.6,
-    reviewCount: 37,
-    images: imagePool.lace.slice().reverse(),
-    colors: ['Dusty Rose', 'Silver', 'Mauve'],
-    patterns: ['Applique', '3D floral'],
-    fabricType: 'Organza applique',
-    materialComposition: 'Sheer organza with applique embroidery',
-    usageSuggestions: ['Statement sleeves', 'Dinner gowns', 'Asoebi styles'],
-    inventory: [11, 13, 7],
-  },
-  {
-    name: 'Bridal Pearl Lace',
-    category: 'Bridal Fabrics',
+    name: 'First Lady Organdy Brocade',
+    category: 'Organdy Brocade',
+    categorySlug: 'organdy-brocade',
     collection: 'wedding-collection',
-    price: 30000,
-    oldPrice: 36000,
-    rating: 5,
-    reviewCount: 21,
-    images: imagePool.lace,
-    colors: ['Pearl White', 'Ivory', 'Soft Nude'],
-    patterns: ['Pearl beading', 'Floral lace'],
-    fabricType: 'Pearl bridal lace',
-    materialComposition: 'Beaded lace on soft mesh',
-    usageSuggestions: ['Wedding gowns', 'Veils', 'Reception dresses'],
-    inventory: [4, 6, 2],
-  },
-  {
-    name: 'George and Lace Occasion Combo',
-    category: 'George',
-    collection: 'staff-picks',
     price: 19500,
-    oldPrice: 24000,
-    rating: 4.6,
-    reviewCount: 24,
-    images: [...imagePool.silk.slice(0, 2), imagePool.lace[0]],
-    colors: ['Royal Purple', 'Gold', 'Cream'],
-    patterns: ['Wrapper motif', 'Cord lace accent'],
-    fabricType: 'George and lace combo',
-    materialComposition: 'George wrapper with lace blouse fabric',
-    usageSuggestions: ['Traditional sets', 'Owambe outfits', 'Family ceremonies'],
-    inventory: [9, 7, 8],
+    oldPrice: 23500,
+    rating: 4.8,
+    reviewCount: 29,
+    images: imagePool.organdy,
+    colors: [
+      { name: 'Blue', hex: '#3b82f6' },
+      { name: 'Pink', hex: '#f472b6' },
+    ],
+    patterns: ['Airy organdy', 'Brocade shimmer'],
+    fabricType: 'Organdy brocade',
+    materialComposition: 'Sheer brocade blend',
+    usageSuggestions: ['Bridal styling', 'Reception gowns', 'Ceremony accents'],
+    inventory: [10, 9, 6],
+    homepageSections: ['wedding-collection', 'luxury-collection', 'campaign-shelf'],
   },
   {
-    name: 'Affordable Ankara Combo Pack',
-    category: 'Ankara',
-    collection: 'affordable-picks',
-    price: 6200,
-    oldPrice: 8500,
-    rating: 4.5,
-    reviewCount: 44,
-    images: imagePool.ankara.slice(1),
-    colors: ['Orange', 'Teal', 'Chocolate'],
-    patterns: ['Mixed print bundle'],
-    fabricType: 'Ankara combo',
-    materialComposition: 'Cotton wax print bundle',
-    usageSuggestions: ['Family matching outfits', 'Quick tailoring', 'Resale bundles'],
-    inventory: [28, 24, 18],
-  },
-  {
-    name: 'Rainy Season Cotton Voile',
-    category: 'Voile',
+    name: 'Tessile Luxe',
+    category: 'Tessile',
+    categorySlug: 'tessile',
     collection: 'seasonal-collections',
-    price: 3600,
-    oldPrice: 4600,
+    price: 9800,
+    oldPrice: 11800,
     rating: 4.4,
-    reviewCount: 13,
-    images: imagePool.cotton,
-    colors: ['Sage', 'Cream', 'Rust'],
-    patterns: ['Botanical print'],
-    fabricType: 'Cotton voile',
-    materialComposition: 'Soft cotton voile blend',
-    usageSuggestions: ['Loose dresses', 'Office blouses', 'Travel outfits'],
-    inventory: [17, 12, 10],
+    reviewCount: 17,
+    images: imagePool.tessile,
+    colors: [
+      { name: 'Blue', hex: '#2563eb' },
+      { name: 'Gray', hex: '#9ca3af' },
+    ],
+    patterns: ['Clean weave', 'Refined texture'],
+    fabricType: 'Tessile',
+    materialComposition: 'Breathable textured blend',
+    usageSuggestions: ['Everyday tailoring', 'Shirts', 'Light jackets'],
+    inventory: [13, 10, 9],
+    homepageSections: ['seasonal-collections', 'affordable-picks', 'new-arrivals'],
   },
 ];
+
+const targetProductSlugs = products.map((product) => slugify(product.name));
 
 const homepageBanners = [
   {
     title: 'Wedding fabrics ready for branch pickup',
-    subtitle: 'Shop pearl lace, George wrappers, and Aso Oke pieces for ceremonies.',
+    subtitle: 'Shop brocade and organdy brocade pieces for ceremonies, receptions, and bridal styling.',
     ctaLabel: 'Shop wedding edit',
-    href: '/shop?collection=wedding-collection',
-    image: imagePool.lace[0],
+    href: '/shop?category=organdy-brocade',
+    image: imagePool.organdy[0],
     placement: 'homepage_promo',
     tone: 'red',
     isActive: true,
     sortOrder: 10,
   },
   {
-    title: 'Affordable everyday fabrics under budget',
-    subtitle: 'Cotton, voile, and Ankara picks for everyday tailoring.',
-    ctaLabel: 'Browse affordable picks',
-    href: '/shop?collection=affordable-picks',
-    image: imagePool.cotton[0],
+    title: 'Tailoring fabrics with clean structure and texture',
+    subtitle: 'Wool, Tessile, and refined everyday fabrics for polished tailoring.',
+    ctaLabel: 'Browse tailoring picks',
+    href: '/shop?category=wool',
+    image: imagePool.wool[2],
     placement: 'homepage_promo',
     tone: 'teal',
     isActive: true,
     sortOrder: 20,
   },
   {
-    title: 'Luxury textures for premium styling',
-    subtitle: 'Silk, chiffon, applique, and George fabrics curated by Phlakes.',
+    title: 'Color-rich fabrics for premium styling',
+    subtitle: 'Bold colorways from Vanetey and design stocks curated by Phlakes.',
     ctaLabel: 'Explore luxury',
-    href: '/shop?collection=luxury-collection',
-    image: imagePool.silk[0],
+    href: '/shop?category=vanetey',
+    image: imagePool.vanetey[2],
     placement: 'homepage_promo',
     tone: 'red',
     isActive: true,
@@ -374,7 +320,7 @@ const homepageSections = collections.map(([title, key], index) => ({
       : key === 'trending-fabrics'
       ? 'Styles customers are browsing now'
       : key === 'wedding-collection'
-      ? 'Ceremony-ready lace, George, and Aso Oke'
+      ? 'Ceremony-ready brocade and organdy brocade'
       : key === 'luxury-collection'
       ? 'Premium textures and occasion fabrics'
       : key === 'affordable-picks'
@@ -404,17 +350,23 @@ async function main() {
 
   await dbConnect();
 
-  for (const [index, name] of categories.entries()) {
-    const slug = slugify(name);
+  await Category.updateMany(
+    { slug: { $nin: activeCategorySlugs } },
+    { $set: { isActive: false } }
+  );
+
+  for (const [index, category] of categories.entries()) {
+    const slug = category.slug;
     await Category.findOneAndUpdate(
       { slug },
       {
         $set: {
-          name,
+          name: category.name,
           slug,
-          description: `${name} fabrics curated for a premium multi-branch fabric marketplace.`,
+          description: category.hint || `${category.name} fabrics curated for a premium multi-branch fabric marketplace.`,
           isComingSoon: false,
           sortOrder: (index + 1) * 10,
+          isActive: true,
         },
       },
       { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
@@ -451,7 +403,7 @@ async function main() {
     const stock = product.inventory.reduce((sum, qty) => sum + qty, 0);
     const oldPrice = product.oldPrice || null;
     const discount = oldPrice && oldPrice > product.price ? Math.round(((oldPrice - product.price) / oldPrice) * 100) : 0;
-    const categorySlug = slugify(product.category);
+    const categorySlug = product.categorySlug || slugify(product.category);
 
     const doc = await Product.findOneAndUpdate(
       { slug },
@@ -475,17 +427,18 @@ async function main() {
           brand: 'Phlakes Fabrics',
           brand_id: 'phlakes-fabrics',
           collection_id: product.collection,
+          homepage_sections: Array.isArray(product.homepageSections) ? product.homepageSections : [],
           isFeatured: true,
           is_featured: true,
           status: 'published',
           rating: product.rating,
           reviewCount: product.reviewCount,
-          colors: product.colors.map((color) => ({ name: color, value: color })),
+          colors: product.colors,
           specs: {
             fabricType: product.fabricType,
             materialComposition: product.materialComposition,
-            availableColors: product.colors,
-            colors: product.colors,
+            availableColors: product.colors.map((color) => color.name),
+            colors: product.colors.map((color) => color.name),
             patterns: product.patterns,
             careInstructions: ['Hand wash gently or dry clean', 'Do not bleach', 'Iron on low heat from reverse side'],
             usageSuggestions: product.usageSuggestions,
@@ -495,7 +448,7 @@ async function main() {
           details: {
             fabricType: product.fabricType,
             materialComposition: product.materialComposition,
-            availableColors: product.colors,
+            availableColors: product.colors.map((color) => color.name),
             availablePatterns: product.patterns,
             careInstructions: ['Hand wash gently or dry clean', 'Do not bleach', 'Store folded in a cool dry place'],
             usageSuggestions: product.usageSuggestions,
@@ -533,6 +486,9 @@ async function main() {
     }
   }
 
+  await Product.deleteMany({ slug: { $nin: targetProductSlugs } });
+  await Inventory.deleteMany({ product: { $nin: productIds } });
+  await Review.deleteMany({ product: { $nin: productIds } });
   await Review.deleteMany({ product: { $in: productIds }, comment: /^Demo:/ });
 
   const reviewSeeds = products.slice(0, 8).flatMap((product, index) => {
